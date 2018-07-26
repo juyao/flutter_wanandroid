@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/bean/ArticleBean.dart';
 import 'package:flutter_wanandroid/bean/BannerBean.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 class HomePage extends StatefulWidget{
+  BuildContext mainContext;
+
+  HomePage(this.mainContext);
+
   @override
   State<StatefulWidget> createState() {
     return HomePageState();
@@ -28,24 +33,40 @@ class HomePageState extends State<HomePage>{
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(itemBuilder: (context,i){
-      if(i==0){
-        return new Container(child: MyViewPager(_banners),width: double.maxFinite,height: 200.0,);
-      }else{
-        return new Card(margin:const EdgeInsets.only(left: 10.0,top: 10.0,right: 10.0,bottom: 0.0),color: Colors.white,elevation: 10.0,child:
-        new Container(padding: const EdgeInsets.all(10.0),child:
-        new Column(children: <Widget>[
-          new Container(margin: const EdgeInsets.only(bottom: 10.0),child: new Row(crossAxisAlignment: CrossAxisAlignment.center,children: <Widget>[
-            CircleAvatar(radius: 15.0,backgroundImage:new NetworkImage("http://imgsrc.baidu.com/imgad/pic/item/42a98226cffc1e17d31927154090f603738de974.jpg"),),
-            Expanded(child: Text(_articles[i].author,style: TextStyle(color: Colors.black87,fontSize: 14.0),),),
-            Text(_articles[i].niceDate,style: TextStyle(color: Colors.grey,fontSize: 14.0),)
-          ],),),
-          new Container(margin: const EdgeInsets.only(bottom: 15.0),child: Text(_articles[i].title,style: TextStyle(color: Colors.black,fontSize: 16.0),),),
-          Text(_articles[i].chapterName,style: TextStyle(color: Colors.blue,fontSize: 14.0),)
-        ],crossAxisAlignment: CrossAxisAlignment.start,)
-          ,)
-          ,);
+      print("i=$i,_articles.length=${_articles.length}");
+      if(i>=_articles.length-1){
+        _currentPage++;
+        getArticleInfo();
       }
-    },itemCount: _articles.length,);
+      if(i==0){
+        return new Container(child: MyViewPager(_banners,widget.mainContext),width: double.maxFinite,height: 200.0,);
+      }else{
+          return GestureDetector(child:new Card(margin:const EdgeInsets.only(left: 10.0,top: 10.0,right: 10.0,bottom: 0.0),color: Colors.white,elevation: 10.0,child:
+          new Container(padding: const EdgeInsets.all(10.0),child:
+          new Column(children: <Widget>[
+            new Container(margin: const EdgeInsets.only(bottom: 10.0),child: new Row(crossAxisAlignment: CrossAxisAlignment.center,children: <Widget>[
+              CircleAvatar(radius: 15.0,backgroundImage:new NetworkImage("http://imgsrc.baidu.com/imgad/pic/item/42a98226cffc1e17d31927154090f603738de974.jpg"),),
+              Expanded(child: Text(_articles[i-1].author,style: TextStyle(color: Colors.black87,fontSize: 14.0),),),
+              Text(_articles[i-1].niceDate,style: TextStyle(color: Colors.grey,fontSize: 14.0),)
+            ],),),
+            new Container(margin: const EdgeInsets.only(bottom: 15.0),child: Text(_articles[i-1].title,style: TextStyle(color: Colors.black,fontSize: 16.0),),),
+            Text(_articles[i-1].chapterName,style: TextStyle(color: Colors.blue,fontSize: 14.0),)
+          ],crossAxisAlignment: CrossAxisAlignment.start,)
+            ,)
+            ,) ,onTap: (){
+            Navigator.of(widget.mainContext).push(new MaterialPageRoute(builder: (context){
+              return new WebviewScaffold(
+                url: _articles[i-1].link,
+                appBar: new AppBar(
+                  title: new Text(_articles[i-1].title,),
+                ),
+                withJavascript: true,
+                withZoom: false,
+              );
+            }));
+          },);
+      }
+    },itemCount: _articles.length,shrinkWrap: true,);
   }
   /**
    * 请求banner数据
@@ -76,7 +97,12 @@ class HomePageState extends State<HomePage>{
         result.add(ArticleBean.fromJson(data[i]));
       }
       setState(() {
+        if(_currentPage==0){
           _articles=result;
+        }else{
+          _articles.addAll(result);
+        }
+
       });
     }
 
@@ -86,15 +112,18 @@ class HomePageState extends State<HomePage>{
 
 class MyViewPager extends StatelessWidget{
   List<BannerBean> _banners;
+  BuildContext mainContext;
   final PageController _pageController = new PageController();
-  MyViewPager(this._banners);
+
+  MyViewPager(this._banners, this.mainContext);
+
   @override
   Widget build(BuildContext context) {
     return new PageView.builder(
       physics: new AlwaysScrollableScrollPhysics(),
       controller: _pageController,
       itemBuilder: (context,index){
-        return Stack(children: <Widget>[
+        return GestureDetector(child: Stack(children: <Widget>[
           new Image.network(_banners[index].imagePath,width: double.maxFinite,fit: BoxFit.fill,),
           new Positioned(child: new Container(child: new Text(_banners[index].title,
             style: TextStyle(color: Colors.white,fontSize: 18.0,),
@@ -103,7 +132,18 @@ class MyViewPager extends StatelessWidget{
             maxLines: 2,),
             padding: const EdgeInsets.only(left: 10.0,right: 10.0,top: 5.0,bottom: 5.0),
             decoration: BoxDecoration(color: const Color(0x80000000)),) ,bottom: 0.0,left: 0.0,right: 0.0,),
-        ],);
+        ],),onTap: (){
+          Navigator.of(mainContext).push(new MaterialPageRoute(builder: (context){
+            return new WebviewScaffold(
+              url: _banners[index].url,
+              appBar: new AppBar(
+                title: new Text(_banners[index].title,),
+              ),
+              withJavascript: true,
+              withZoom: false,
+            );
+          }));
+        },);
       },itemCount: _banners.length,scrollDirection: Axis.horizontal,);
   }
 
