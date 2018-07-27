@@ -13,14 +13,14 @@ class KnowledeState extends State<KnowledgeWidget>{
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(itemBuilder: (context,index){
-//        S
-//        for(int i=0;i<10;i++){
-//          widgets.add(Text("test"));
-//        }
+        List<Widget> widgets=[];
+        for(int i=0;i<50;i++){
+          widgets.add(Text("test"));
+        }
         return GestureDetector(child: new Card(margin: const EdgeInsets.only(left: 10.0,top: 10.0,right: 10.0,bottom: 0.0),
           color: Colors.white,
           elevation: 10.0,
-          child: new Container(padding: const EdgeInsets.all(10.0),child: new Row(children: <Widget>[new Expanded(child: new Column(crossAxisAlignment: CrossAxisAlignment.start,children: <Widget>[Text("这是标题",style: TextStyle(color: Colors.black,fontSize: 18.0),),new Flow(delegate: MyFlowDelegate(padding: 0.0),children: <Widget>[Text("yyyy")],)],)),Icon(Icons.keyboard_arrow_right)],
+          child: new Container(padding: const EdgeInsets.all(10.0),child: new Row(children: <Widget>[new Expanded(child: new Column(crossAxisAlignment: CrossAxisAlignment.start,children: <Widget>[Text("这是标题",style: TextStyle(color: Colors.black,fontSize: 18.0),),new Container(width: double.maxFinite,height:40.0,child: new Flow(delegate: MyFlowDelegate(padding: 0.0),children: widgets,),)],)),Icon(Icons.keyboard_arrow_right)],
             crossAxisAlignment: CrossAxisAlignment.center,),)
           ,),);
     },itemCount: 10,);
