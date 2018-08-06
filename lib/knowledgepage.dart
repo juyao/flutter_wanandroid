@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/bean/Knowledge.dart';
+import 'package:flutter_wanandroid/typedetail.dart';
 import 'package:flutter_wanandroid/util/netutils.dart';
 class KnowledgeWidget extends StatefulWidget{
+  BuildContext mainContext;
+
+  KnowledgeWidget(this.mainContext);
+
   @override
   State<StatefulWidget> createState() {
     return KnowledeState();
@@ -33,7 +38,11 @@ class KnowledeState extends State<KnowledgeWidget>{
             new Container(padding: const EdgeInsets.only(top: 10.0),width: double.maxFinite,height: 60.0,
               child:new Flow(delegate: MyFlowDelegate(padding: 10.0),children: widgets,),)],)),Icon(Icons.keyboard_arrow_right)],
             crossAxisAlignment: CrossAxisAlignment.center,),)
-          ,),);
+          ,),onTap: (){
+            Navigator.of(widget.mainContext).push(new MaterialPageRoute(builder: (context){
+                  return new TypeDetail(_knowledges[index]);
+            }));
+        },);
     },itemCount: _knowledges.length,);
   }
 /**

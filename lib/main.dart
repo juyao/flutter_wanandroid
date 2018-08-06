@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if(index==0){
               return new HomePage(context);
             }else{
-              return new KnowledgeWidget();
+              return new KnowledgeWidget(context);
             }
           },);
 
