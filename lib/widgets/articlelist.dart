@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_wanandroid/bean/ArticleBean.dart';
+import 'package:flutter_wanandroid/util/nativemethods.dart';
 import 'package:flutter_wanandroid/util/netutils.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
@@ -50,6 +51,9 @@ class ArticleListState extends State<ArticleList>{
             url: _articles[index].link,
             appBar: new AppBar(
               title: new Text(_articles[index].title,),
+              actions: <Widget>[GestureDetector(child: Container(child: Center(child: Text("复制链接"),),padding: EdgeInsets.only(right: 10.0),),onTap:(){
+                NativeMethods.copyToClipBoard(_articles[index].link);
+              },)],
             ),
             withJavascript: true,
             withZoom: false,

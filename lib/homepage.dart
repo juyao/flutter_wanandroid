@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_wanandroid/bean/ArticleBean.dart';
 import 'package:flutter_wanandroid/bean/BannerBean.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_wanandroid/util/nativemethods.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 class HomePage extends StatefulWidget{
   BuildContext mainContext;
@@ -59,6 +61,9 @@ class HomePageState extends State<HomePage>{
                 url: _articles[i-1].link,
                 appBar: new AppBar(
                   title: new Text(_articles[i-1].title,),
+                  actions: <Widget>[GestureDetector(child:Container(child: Center(child: Text("复制链接"),),padding: EdgeInsets.only(right: 10.0),),onTap: (){
+                    NativeMethods.copyToClipBoard(_articles[i-1].link);
+                  },)],
                 ),
                 withJavascript: true,
                 withZoom: false,
@@ -67,6 +72,7 @@ class HomePageState extends State<HomePage>{
           },);
       }
     },itemCount: _articles.length,shrinkWrap: true,);
+
   }
   /**
    * 请求banner数据
@@ -138,6 +144,11 @@ class MyViewPager extends StatelessWidget{
               url: _banners[index].url,
               appBar: new AppBar(
                 title: new Text(_banners[index].title,),
+                actions: <Widget>[GestureDetector(child:Container(child: Center(child: Text("复制链接"),),padding: EdgeInsets.only(right: 10.0),),
+                  onTap:(){
+                    NativeMethods.copyToClipBoard(_banners[index].url);
+            }
+            ,)],
               ),
               withJavascript: true,
               withZoom: false,
